@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+    <meta name="theme-color" content="#0b1118">
+    <meta name="color-scheme" content="dark">
+    <meta name="description" content="A clear weather dashboard with live temperature, rain probability, humidity, and wind forecasts.">
+    <title>Yvaine Weather</title>
+    <script src="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.2" defer></script>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#forecast">Skip to forecast</a>
+
+    <main class="app-shell" id="forecast">
+      <header class="topbar">
+        <div class="brand">
+          <i class="ph-fill ph-cloud-sun brand-icon" aria-hidden="true"></i>
+          <span>Yvaine</span>
+        </div>
+
+        <div class="search-area">
+          <form class="search-form" id="search-form" role="search">
+            <label class="sr-only" for="location-search">Search for a city or place</label>
+            <input
+              id="location-search"
+              name="location"
+              type="search"
+              autocomplete="off"
+              enterkeyhint="search"
+              placeholder="Search city or place"
+              minlength="2"
+              aria-autocomplete="list"
+              aria-controls="search-results"
+              aria-expanded="false"
+              required
+            >
+            <button class="search-button" type="submit">Search</button>
+          </form>
+          <div class="search-results" id="search-results" aria-label="Location matches" aria-live="polite" hidden></div>
+        </div>
+
+        <div class="topbar-actions">
+          <button class="button button-secondary location-button" id="location-button" type="button">
+            <i class="ph ph-navigation-arrow" aria-hidden="true"></i>
+            <span>My location</span>
+          </button>
+          <button class="unit-button" id="unit-button" type="button" aria-label="Switch to Fahrenheit">°C</button>
+        </div>
+      </header>
+
+      <div class="status-banner" id="status-banner" role="status" aria-live="polite" hidden></div>
+
+      <div class="dashboard" id="dashboard" aria-busy="true">
+        <section class="current-panel" aria-labelledby="current-location">
+          <div class="current-copy">
+            <p class="location-name" id="current-location">Quezon City, Philippines</p>
+            <p class="updated-time" id="updated-time">Loading the latest forecast...</p>
+
+            <div class="current-reading">
+              <div class="weather-scene is-rainy" id="weather-scene" aria-hidden="true">
+                <div class="scene-sun"></div>
+                <div class="scene-moon"></div>
+                <div class="scene-cloud scene-cloud-back"></div>
+                <div class="scene-cloud scene-cloud-front"></div>
+                <div class="rain-field" id="rain-field"></div>
+              </div>
+
+              <div>
+                <div class="current-temperature skeleton-text" id="current-temperature">--°</div>
+                <h1 class="current-condition" id="current-condition">Loading weather</h1>
+                <p class="feels-like" id="feels-like">Feels like --°</p>
+              </div>
+            </div>
+          </div>
+
+          <aside class="weather-advice" aria-labelledby="advice-title">
+            <p class="advice-label">Your day at a glance</p>
+            <h2 id="advice-title">Checking the sky...</h2>
+            <p id="advice-copy">We are collecting the latest rain, temperature, humidity, and wind forecast.</p>
+            <div class="rain-confidence">
+              <div class="rain-confidence-header">
+                <span>Highest rain chance ahead</span>
+                <strong id="peak-rain">--%</strong>
+              </div>
+              <div class="rain-track" role="progressbar" aria-label="Highest rain chance ahead" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="rain-progress">
+                <span id="rain-progress-fill"></span>
+              </div>
+              <p class="rain-explanation" id="rain-explanation">Forecast probability will appear here.</p>
+            </div>
+          </aside>
+        </section>
+
+        <nav class="forecast-tabs" aria-label="Forecast range" role="tablist">
+          <button class="forecast-tab is-active" id="today-tab" type="button" role="tab" aria-selected="true" aria-controls="today-panel">Today</button>
+          <button class="forecast-tab" id="days-tab" type="button" role="tab" aria-selected="false" aria-controls="days-panel">10 days</button>
+        </nav>
+
+        <section class="forecast-panel" id="today-panel" role="tabpanel" aria-labelledby="today-tab">
+          <div class="hourly-heading">
+            <h2>Next 12 hours</h2>
+            <p><i class="ph ph-arrows-horizontal" aria-hidden="true"></i> Swipe or scroll for later hours</p>
+          </div>
+          <div class="hourly-viewport">
+            <button class="hourly-nav hourly-nav-previous" id="hourly-previous" type="button" aria-label="Show earlier hours" title="Earlier hours">
+              <i class="ph ph-caret-left" aria-hidden="true"></i>
+            </button>
+            <div class="hourly-track-shell">
+              <div class="hourly-scroll" id="hourly-forecast" aria-label="Hourly forecast"></div>
+              <div class="hourly-scrollbar" id="hourly-scrollbar" aria-hidden="true">
+                <span id="hourly-scrollbar-thumb"></span>
+              </div>
+            </div>
+            <button class="hourly-nav hourly-nav-next" id="hourly-next" type="button" aria-label="Show later hours" title="Later hours">
+              <i class="ph ph-caret-right" aria-hidden="true"></i>
+            </button>
+          </div>
+        </section>
+
+        <section class="forecast-panel" id="days-panel" role="tabpanel" aria-labelledby="days-tab" hidden>
+          <div class="daily-forecast" id="daily-forecast" aria-label="10 day forecast"></div>
+        </section>
+
+        <section class="weather-details" aria-label="Weather instruments">
+          <article class="detail-card">
+            <div class="detail-heading"><i class="ph-fill ph-cloud-rain detail-icon" aria-hidden="true"></i><h2>Precipitation</h2></div>
+            <p class="detail-value" id="precipitation-value">-- mm</p>
+            <p class="detail-copy" id="precipitation-copy">Checking current rainfall.</p>
+          </article>
+          <article class="detail-card">
+            <div class="detail-heading"><i class="ph-fill ph-drop detail-icon" aria-hidden="true"></i><h2>Humidity</h2></div>
+            <p class="detail-value" id="humidity-value">--%</p>
+            <p class="detail-copy" id="humidity-copy">Checking how humid it feels.</p>
+          </article>
+          <article class="detail-card">
+            <div class="detail-heading"><i class="ph-fill ph-wind detail-icon" aria-hidden="true"></i><h2>Wind</h2></div>
+            <p class="detail-value" id="wind-value">-- km/h</p>
+            <p class="detail-copy" id="wind-copy">Checking speed and direction.</p>
+          </article>
+          <article class="detail-card">
+            <div class="detail-heading"><i class="ph-fill ph-sun-dim detail-icon" aria-hidden="true"></i><h2>UV index</h2></div>
+            <p class="detail-value" id="uv-value">--</p>
+            <p class="detail-copy" id="uv-copy">Checking sun exposure.</p>
+          </article>
+          <article class="detail-card">
+            <div class="detail-heading"><i class="ph-fill ph-thermometer-simple detail-icon" aria-hidden="true"></i><h2>Temperature</h2></div>
+            <p class="detail-value" id="temperature-range">--° to --°</p>
+            <p class="detail-copy" id="temperature-copy">Checking today's range.</p>
+          </article>
+        </section>
+      </div>
+
+      <footer class="footer">
+        <p>Forecast data from <a href="https://open-meteo.com/" target="_blank" rel="noreferrer">Open-Meteo</a>. Location names from <a href="https://www.bigdatacloud.com/" target="_blank" rel="noreferrer">BigDataCloud</a>.</p>
+        <p>Rain chance means the probability of measurable precipitation at your location.</p>
+      </footer>
+    </main>
+  </body>
+</html>
