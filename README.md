@@ -2,6 +2,8 @@
 
 Yvaine is a responsive weather dashboard built with plain HTML, CSS, and JavaScript. It shows current conditions, the next 12 hours, and a 10-day forecast without a framework or build step.
 
+<img width="1189" height="894" alt="image" src="https://github.com/user-attachments/assets/9d0b1886-6a59-49e7-b864-5b1a09be9c3f" />
+
 ## Features
 
 - Search suggestions for cities and places worldwide
